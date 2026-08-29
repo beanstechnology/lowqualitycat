@@ -198,7 +198,20 @@
   <div id="dlg-media"></div>
   <div class="dlg-bar">
     <span id="dlg-name"></span>
+    <span id="dlg-acts"></span>
     <button id="dlg-close">Close ✕</button>
+  </div>
+</dialog>
+
+<dialog id="pick">
+  <div style="padding:20px 24px">
+    <div style="font-size:12px;letter-spacing:2px;color:var(--dim);margin-bottom:14px">CHOOSE YOUR CAPTION</div>
+    <button onclick="sendToX(0)" style="display:block;width:100%;text-align:left;background:none;border:1px solid var(--line);color:#fff;font-family:inherit;font-size:13px;padding:12px 14px;margin-bottom:10px;cursor:pointer">LQmeow! Low Quality Cat: low quality is the only quality!</button>
+    <button onclick="sendToX(1)" style="display:block;width:100%;text-align:left;background:none;border:1px solid var(--line);color:#fff;font-family:inherit;font-size:13px;padding:12px 14px;cursor:pointer">Low Quality Cat $LQC</button>
+  </div>
+  <div class="dlg-bar">
+    <span>REMEMBER TO ATTACH THE MEME</span>
+    <button id="pick-close">Close ✕</button>
   </div>
 </dialog>
 
@@ -319,6 +332,11 @@
     save.href=url;save.download=name;
     actions.appendChild(save);
 
+    var post=document.createElement('button');
+    post.textContent='Post';
+    post.onclick=function(e){e.stopPropagation();postOnX();};
+    actions.appendChild(post);
+
     if(!isVid){
       var copy=document.createElement('button');
       copy.textContent='Copy';
@@ -343,8 +361,45 @@
       dlgMedia.appendChild(im);
     }
     dlgName.textContent=name.toUpperCase();
+    var acts=document.getElementById('dlg-acts');
+    acts.innerHTML='';
+    if(!isVid){
+      var c=document.createElement('button');
+      c.textContent='Copy';
+      c.onclick=function(){copyImage(url,c);};
+      acts.appendChild(c);
+    }
+    var s=document.createElement('a');
+    s.textContent='Save';s.href=url;s.download=name;
+    s.style.cssText='color:var(--osd);text-decoration:none;margin-left:14px;text-transform:uppercase';
+    acts.appendChild(s);
+    var p=document.createElement('button');
+    p.textContent='Post';p.style.marginLeft='14px';
+    p.onclick=postOnX;
+    acts.appendChild(p);
     dlg.showModal();
   }
+
+  var CAPTIONS=[
+    {label:'LQmeow',text:'LQmeow! Low Quality Cat: low quality is the only quality!'},
+    {label:'$LQC',text:'Low Quality Cat $LQC'}
+  ];
+  var SITE='https://lowqualitycat.com/memes.html';
+
+  function postOnX(){
+    var pick=document.getElementById('pick');
+    pick.showModal();
+  }
+
+  function sendToX(i){
+    document.getElementById('pick').close();
+    var text=CAPTIONS[i].text+'\n'+SITE;
+    window.open('https://x.com/intent/post?text='+encodeURIComponent(text),'_blank');
+  }
+  window.sendToX=sendToX;
+  document.getElementById('pick-close').onclick=function(){document.getElementById('pick').close();};
+  var pickDlg=document.getElementById('pick');
+  pickDlg.addEventListener('click',function(e){if(e.target===pickDlg)pickDlg.close();});
 
   function copyImage(url,btn){
     if(!navigator.clipboard||!window.ClipboardItem){
