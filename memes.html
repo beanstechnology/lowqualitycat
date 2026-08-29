@@ -94,22 +94,32 @@
   .play::before{content:"▶";margin-right:8px}
   .actions{
     display:flex;border-top:1px solid var(--line);
+    gap:6px;padding:8px 6px;justify-content:center;align-items:stretch;
   }
   .actions a,.actions button{
-    flex:1;background:none;border:none;color:var(--dim);
-    font-family:inherit;font-size:11px;letter-spacing:2px;
-    padding:8px 0;cursor:pointer;text-transform:uppercase;
+    flex:1;background:#000;
+    border:2px dashed var(--osd);color:var(--osd);
+    font-family:inherit;font-size:13px;font-weight:bold;letter-spacing:2px;
+    padding:9px 0;cursor:pointer;text-transform:uppercase;
     text-decoration:none;text-align:center;
+    display:flex;align-items:center;justify-content:center;gap:6px;
   }
-  .actions a+button,.actions a+a{border-left:1px solid var(--line)}
+  .actions a{transform:rotate(-1.5deg)}
+  .actions button{transform:rotate(1.2deg)}
   .actions a:hover,.actions button:hover,
-  .actions a:focus-visible,.actions button:focus-visible{color:var(--osd);outline:none}
-  .actions .ok{color:var(--osd)}
+  .actions a:focus-visible,.actions button:focus-visible{
+    background:var(--osd);color:#000;outline:none;
+  }
+  .actions .ok{background:var(--osd);color:#000}
+  .btn-logo{width:20px;height:20px;image-rendering:pixelated;display:block}
+  .actions a:hover .btn-logo,.actions button:hover .btn-logo{filter:invert(1)}
 
   /* lightbox */
   dialog{
     background:var(--bg);border:1px solid var(--ink);
     max-width:92vw;max-height:92vh;padding:0;
+    position:fixed;top:50%;left:50%;
+    transform:translate(-50%,-50%);margin:0;
   }
   dialog::backdrop{background:rgba(0,0,0,.85)}
   dialog img,dialog video{max-width:90vw;max-height:82vh;display:block}
@@ -333,7 +343,7 @@
     actions.appendChild(save);
 
     var post=document.createElement('button');
-    post.textContent='Post';
+    post.innerHTML='<img class="btn-logo" src="lqclogo-white-outline-transparentbg.png" alt="">POST';
     post.onclick=function(e){e.stopPropagation();postOnX();};
     actions.appendChild(post);
 
