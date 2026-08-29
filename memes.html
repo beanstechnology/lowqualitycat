@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lowqualitycat — meme vault</title>
+<style>
+  :root{
+    --bg:#000;
+    --ink:#fff;
+    --dim:#8a8a8a;
+    --osd:#ffb000; /* camcorder timestamp orange */
+    --line:#2a2a2a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink)}
+  body{
+    font-family:"Courier New",Courier,monospace;
+    padding:16px 16px 80px;
+    -webkit-font-smoothing:none;
+  }
+  a{color:inherit}
+
+  /* viewfinder header */
+  header{
+    position:relative;
+    border:1px solid var(--line);
+    padding:28px 20px 24px;
+    margin-bottom:20px;
+    text-align:center;
+  }
+  .corner{position:absolute;width:18px;height:18px;border-color:var(--ink);border-style:solid;border-width:0}
+  .c-tl{top:6px;left:6px;border-top-width:2px;border-left-width:2px}
+  .c-tr{top:6px;right:6px;border-top-width:2px;border-right-width:2px}
+  .c-bl{bottom:6px;left:6px;border-bottom-width:2px;border-left-width:2px}
+  .c-br{bottom:6px;right:6px;border-bottom-width:2px;border-right-width:2px}
+  .rec{
+    position:absolute;top:12px;left:16px;
+    color:var(--osd);font-size:12px;letter-spacing:2px;
+  }
+  .rec::before{
+    content:"●";color:#ff2b2b;margin-right:6px;
+    animation:blink 1.2s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+  .stamp{
+    position:absolute;top:12px;right:16px;
+    color:var(--osd);font-size:12px;letter-spacing:1px;
+  }
+  header img.logo{width:84px;height:auto;image-rendering:pixelated;margin-bottom:10px}
+  h1{
+    font-size:20px;font-weight:bold;letter-spacing:4px;text-transform:uppercase;
+  }
+  .sub{color:var(--dim);font-size:12px;margin-top:6px;letter-spacing:2px}
+  .count{color:var(--osd);font-size:12px;margin-top:10px;letter-spacing:2px}
+  nav{margin-top:14px;font-size:12px;letter-spacing:2px}
+  nav a{color:var(--dim);text-decoration:none;margin:0 10px}
+  nav a:hover,nav a:focus{color:var(--osd)}
+
+  /* filter row */
+  .filters{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .filters button{
+    background:none;border:1px solid var(--line);color:var(--dim);
+    font-family:inherit;font-size:12px;letter-spacing:2px;
+    padding:6px 14px;cursor:pointer;text-transform:uppercase;
+  }
+  .filters button[aria-pressed="true"]{color:var(--osd);border-color:var(--osd)}
+  .filters button:focus-visible{outline:2px solid var(--osd);outline-offset:2px}
+
+  /* grid */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:10px;
+  }
+  .cell{
+    border:1px solid var(--line);
+    background:#0a0a0a;
+    display:flex;flex-direction:column;
+  }
+  .frame{
+    position:relative;aspect-ratio:1/1;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  .frame img,.frame video{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+  .play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:var(--osd);font-size:12px;letter-spacing:2px;
+    background:rgba(0,0,0,.35);
+  }
+  .play::before{content:"▶";margin-right:8px}
+  .actions{
+    display:flex;border-top:1px solid var(--line);
+  }
+  .actions a,.actions button{
+    flex:1;background:none;border:none;color:var(--dim);
+    font-family:inherit;font-size:11px;letter-spacing:2px;
+    padding:8px 0;cursor:pointer;text-transform:uppercase;
+    text-decoration:none;text-align:center;
+  }
+  .actions a+button,.actions a+a{border-left:1px solid var(--line)}
+  .actions a:hover,.actions button:hover,
+  .actions a:focus-visible,.actions button:focus-visible{color:var(--osd);outline:none}
+  .actions .ok{color:var(--osd)}
+
+  /* lightbox */
+  dialog{
+    background:var(--bg);border:1px solid var(--ink);
+    max-width:92vw;max-height:92vh;padding:0;
+  }
+  dialog::backdrop{background:rgba(0,0,0,.85)}
+  dialog img,dialog video{max-width:90vw;max-height:82vh;display:block}
+  .dlg-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 12px;border-top:1px solid var(--line);
+    font-size:12px;letter-spacing:2px;color:var(--dim)}
+  .dlg-bar button{
+    background:none;border:none;color:var(--osd);font-family:inherit;
+    font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;
+  }
+
+  /* janky collage rails */
+  .rail{
+    position:fixed;top:0;bottom:0;width:78px;z-index:0;
+    pointer-events:none;overflow:hidden;
+  }
+  .rail-l{left:0}
+  .rail-r{right:0}
+  .scrap{
+    position:absolute;width:86px;height:86px;object-fit:cover;
+    image-rendering:pixelated;
+    filter:contrast(1.25) saturate(1.15);
+    box-shadow:0 0 0 2px #000,0 0 0 3px var(--line);
+    opacity:.9;
+  }
+  .scrap:nth-child(3n){filter:contrast(1.4) grayscale(1)}
+  .scrap:nth-child(4n){filter:contrast(1.2) hue-rotate(15deg)}
+  .clip-a{clip-path:polygon(4% 0,96% 6%,100% 88%,10% 100%,0 40%)}
+  .clip-b{clip-path:polygon(0 10%,70% 0,100% 30%,92% 100%,6% 92%)}
+  .clip-c{clip-path:polygon(12% 4%,100% 0,88% 96%,0 100%)}
+  .clip-d{clip-path:polygon(0 0,100% 12%,96% 88%,20% 100%,4% 60%)}
+  header,.filters,.grid,.status,footer{position:relative;z-index:1}
+  body{padding-left:92px;padding-right:92px}
+  @media (max-width:700px){
+    .rail{display:none}
+    body{padding-left:16px;padding-right:16px}
+  }
+
+  .status{color:var(--dim);text-align:center;font-size:12px;letter-spacing:2px;padding:40px 0}
+  footer{
+    margin-top:40px;text-align:center;color:var(--dim);
+    font-size:11px;letter-spacing:2px;
+  }
+  footer a{color:var(--osd);text-decoration:none}
+
+  @media (prefers-reduced-motion:reduce){
+    .rec::before{animation:none}
+  }
+  @media (max-width:480px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  }
+</style>
+</head>
+<body>
+
+<div class="rail rail-l" id="rail-l" aria-hidden="true"></div>
+<div class="rail rail-r" id="rail-r" aria-hidden="true"></div>
+
+<header>
+  <span class="corner c-tl"></span><span class="corner c-tr"></span>
+  <span class="corner c-bl"></span><span class="corner c-br"></span>
+  <span class="rec">REC</span>
+  <span class="stamp" id="stamp"></span>
+  <img class="logo" src="lqclogo-white-outline-transparentbg.png" alt="lowqualitycat logo">
+  <h1>Meme Vault</h1>
+  <div class="sub">低质量猫 — 0.1 MP ARCHIVE</div>
+  <div class="count" id="count">LOADING…</div>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="https://dexscreener.com/solana/f4txmevywadnmnb7fspbfyvkjukevrw5pxjyarhvqerd" target="_blank" rel="noopener">$LQC CHART</a>
+    <a href="https://x.com/Lowqltcat" target="_blank" rel="noopener">X</a>
+  </nav>
+</header>
+
+<div class="filters" role="group" aria-label="Filter">
+  <button data-f="all" aria-pressed="true">All</button>
+  <button data-f="img" aria-pressed="false">Images</button>
+  <button data-f="vid" aria-pressed="false">Videos</button>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="status" id="status">LOADING FILES…</div>
+
+<dialog id="dlg">
+  <div id="dlg-media"></div>
+  <div class="dlg-bar">
+    <span id="dlg-name"></span>
+    <button id="dlg-close">Close ✕</button>
+  </div>
+</dialog>
+
+<footer>
+  SAVE IT. POST IT. STAY LOW QUALITY. — <a href="index.html">lowqualitycat.com</a>
+</footer>
+
+<script>
+(function(){
+  var grid=document.getElementById('grid');
+  var status=document.getElementById('status');
+  var count=document.getElementById('count');
+  var dlg=document.getElementById('dlg');
+  var dlgMedia=document.getElementById('dlg-media');
+  var dlgName=document.getElementById('dlg-name');
+  document.getElementById('dlg-close').onclick=function(){closeDlg();};
+  dlg.addEventListener('click',function(e){if(e.target===dlg)closeDlg();});
+  function closeDlg(){dlgMedia.innerHTML='';dlg.close();}
+
+  // camcorder timestamp
+  var d=new Date();
+  document.getElementById('stamp').textContent=
+    ('0'+(d.getMonth()+1)).slice(-2)+'.'+('0'+d.getDate()).slice(-2)+'.'+d.getFullYear();
+
+  var VID=/\.(mp4|mov|webm)$/i;
+
+  fetch('memes/list.json')
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(build)
+    .catch(function(){status.textContent='COULD NOT LOAD FILE LIST.';});
+
+  function build(files){
+    files=files.filter(function(f){return f!=='list.json';});
+    var imgs=0,vids=0;
+    files.forEach(function(name){
+      var isVid=VID.test(name);
+      isVid?vids++:imgs++;
+      grid.appendChild(cell(name,isVid));
+    });
+    status.style.display='none';
+    count.textContent=imgs+' IMAGES / '+vids+' VIDEOS';
+
+    buildRails(files.filter(function(f){return !VID.test(f);}));
+
+    // filters
+    document.querySelectorAll('.filters button').forEach(function(b){
+      b.onclick=function(){
+        document.querySelectorAll('.filters button').forEach(function(x){x.setAttribute('aria-pressed','false');});
+        b.setAttribute('aria-pressed','true');
+        var f=b.dataset.f;
+        document.querySelectorAll('.cell').forEach(function(c){
+          c.style.display=(f==='all'||c.dataset.kind===f)?'':'none';
+        });
+      };
+    });
+  }
+
+  function buildRails(imgFiles){
+    if(window.innerWidth<=700||!imgFiles.length)return;
+    var clips=['clip-a','clip-b','clip-c','clip-d'];
+    var pool=imgFiles.slice().sort(function(){return Math.random()-.5;});
+    ['rail-l','rail-r'].forEach(function(id){
+      var rail=document.getElementById(id);
+      var y=-10,i=0;
+      while(y<window.innerHeight+40){
+        var name=pool[i%pool.length];i++;
+        var im=document.createElement('img');
+        im.src='memes/'+encodeURIComponent(name);
+        im.className='scrap '+clips[Math.floor(Math.random()*clips.length)];
+        im.style.top=y+'px';
+        im.style.left=(Math.random()*14-10)+'px';
+        im.style.transform='rotate('+(Math.random()*16-8)+'deg)';
+        im.loading='lazy';im.alt='';
+        rail.appendChild(im);
+        y+=62+Math.random()*26;
+      }
+    });
+  }
+
+  function cell(name,isVid){
+    var url='memes/'+encodeURIComponent(name);
+    var c=document.createElement('div');
+    c.className='cell';
+    c.dataset.kind=isVid?'vid':'img';
+
+    var frame=document.createElement('div');
+    frame.className='frame';
+
+    if(isVid){
+      var v=document.createElement('video');
+      v.src=url+'#t=0.1';
+      v.preload='none';
+      v.muted=true;v.loop=true;v.playsInline=true;
+      var overlay=document.createElement('div');
+      overlay.className='play';
+      overlay.textContent='PLAY';
+      frame.appendChild(v);
+      frame.appendChild(overlay);
+      frame.onclick=function(){openDlg(name,url,true);};
+      // load a preview frame when scrolled into view
+      new IntersectionObserver(function(es,obs){
+        es.forEach(function(e){
+          if(e.isIntersecting){v.preload='metadata';v.load();obs.disconnect();}
+        });
+      }).observe(v);
+    }else{
+      var im=document.createElement('img');
+      im.src=url;im.loading='lazy';im.alt=name;
+      frame.appendChild(im);
+      frame.onclick=function(){openDlg(name,url,false);};
+    }
+
+    var actions=document.createElement('div');
+    actions.className='actions';
+
+    var save=document.createElement('a');
+    save.textContent='Save';
+    save.href=url;save.download=name;
+    actions.appendChild(save);
+
+    if(!isVid){
+      var copy=document.createElement('button');
+      copy.textContent='Copy';
+      copy.onclick=function(e){e.stopPropagation();copyImage(url,copy);};
+      actions.appendChild(copy);
+    }
+
+    c.appendChild(frame);
+    c.appendChild(actions);
+    return c;
+  }
+
+  function openDlg(name,url,isVid){
+    dlgMedia.innerHTML='';
+    if(isVid){
+      var v=document.createElement('video');
+      v.src=url;v.controls=true;v.autoplay=true;v.playsInline=true;
+      dlgMedia.appendChild(v);
+    }else{
+      var im=document.createElement('img');
+      im.src=url;im.alt=name;
+      dlgMedia.appendChild(im);
+    }
+    dlgName.textContent=name.toUpperCase();
+    dlg.showModal();
+  }
+
+  function copyImage(url,btn){
+    if(!navigator.clipboard||!window.ClipboardItem){
+      flash(btn,'NO COPY');return;
+    }
+    fetch(url)
+      .then(function(r){return r.blob();})
+      .then(function(blob){return toPng(blob);})
+      .then(function(png){return navigator.clipboard.write([new ClipboardItem({'image/png':png})]);})
+      .then(function(){flash(btn,'Copied');})
+      .catch(function(){flash(btn,'Failed');});
+  }
+
+  function toPng(blob){
+    return new Promise(function(res,rej){
+      var im=new Image();
+      im.onload=function(){
+        var cv=document.createElement('canvas');
+        cv.width=im.naturalWidth;cv.height=im.naturalHeight;
+        cv.getContext('2d').drawImage(im,0,0);
+        cv.toBlob(function(b){b?res(b):rej();},'image/png');
+        URL.revokeObjectURL(im.src);
+      };
+      im.onerror=rej;
+      im.src=URL.createObjectURL(blob);
+    });
+  }
+
+  function flash(btn,msg){
+    var old=btn.textContent;
+    btn.textContent=msg;btn.classList.add('ok');
+    setTimeout(function(){btn.textContent=old;btn.classList.remove('ok');},1200);
+  }
+})();
+</script>
+</body>
+</html>
