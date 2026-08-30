@@ -7,6 +7,7 @@
 <meta property="og:title" content="Low Quality Cat — $LQC">
 <meta property="og:description" content="low quality is the only quality. 低质量猫">
 <meta property="og:image" content="https://lowqualitycat.com/lqclogo-white-outline-transparentbg.png">
+<link href="https://fonts.googleapis.com/css2?family=Walter+Turncoat&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#000;--ink:#fff;--dim:#7f8a8a;
@@ -17,58 +18,72 @@
   body{
     font-family:"Courier New",Courier,monospace;
     display:flex;flex-direction:column;align-items:center;
-    padding:40px 16px 60px;text-align:center;
+    padding:36px 16px 60px;text-align:center;
     -webkit-font-smoothing:none;
   }
-  .logo{width:110px;image-rendering:pixelated;margin-bottom:14px}
-  h1{
-    font-size:26px;letter-spacing:5px;text-transform:uppercase;
-    text-shadow:-2px 0 var(--mg),2px 0 var(--cy);
-  }
-  .sub{color:var(--dim);font-size:13px;letter-spacing:3px;margin-top:8px}
+  .logo{width:min(280px,70vw);image-rendering:pixelated;margin-bottom:20px}
 
-  /* CA bar */
-  .ca{
-    margin-top:26px;display:flex;align-items:stretch;max-width:100%;
+  h1{
+    font-family:"Walter Turncoat",cursive;
+    font-size:clamp(24px,6vw,40px);
+    font-weight:normal;color:#fff;
+    letter-spacing:2px;line-height:1.4;
+  }
+  h1 span{display:inline-block;margin:0 .35em}
+  h1 span:nth-child(1){transform:rotate(-5deg) skewX(-4deg)}
+  h1 span:nth-child(2){transform:rotate(3deg) translateY(6px) skewX(3deg);font-size:1.12em}
+  h1 span:nth-child(3){transform:rotate(-2.5deg) translateY(-3px) skewX(-2deg);font-size:.94em}
+  .cn{color:var(--dim);font-size:15px;letter-spacing:4px;margin-top:14px}
+
+  /* side-by-side row */
+  .row{
+    margin-top:40px;display:flex;gap:48px;align-items:center;
+    justify-content:center;flex-wrap:wrap;
+  }
+
+  /* the vault (small) */
+  .vault-wrap{perspective:700px;cursor:pointer}
+  .vault-label{
+    font-size:12px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;
+    margin-bottom:10px;
+    text-shadow:-1.5px 0 var(--mg),1.5px 0 var(--cy);
+  }
+  svg.vault{width:min(170px,44vw);height:auto;display:block;margin:0 auto;overflow:visible}
+  .ghost-m{stroke:var(--mg);opacity:.8}
+  .ghost-c{stroke:var(--cy);opacity:.8}
+  .white{stroke:#fff}
+  .door{
+    transform-origin:82% 50%;
+    transition:transform .8s cubic-bezier(.6,-.2,.3,1);
+  }
+  .vault-wrap.open .door{transform:rotateY(100deg)}
+  .inside-txt{
+    opacity:0;fill:#fff;font-family:"Courier New",monospace;font-size:15px;
+    letter-spacing:3px;transition:opacity .4s .4s;
+  }
+  .vault-wrap.open .inside-txt{opacity:1}
+  .hint{color:var(--dim);font-size:10px;letter-spacing:2px;margin-top:8px}
+  .vault-wrap:hover .vault{filter:drop-shadow(0 0 8px rgba(250,50,210,.35)) drop-shadow(0 0 8px rgba(4,230,233,.35))}
+
+  /* CA block */
+  .ca-block{display:flex;flex-direction:column;gap:12px;align-items:center}
+  .ca-label{
+    font-size:12px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;
+    text-shadow:-1.5px 0 var(--mg),1.5px 0 var(--cy);
   }
   .ca code{
-    border:1px solid var(--line);padding:10px 12px;font-size:11px;
-    color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    max-width:62vw;
+    display:block;border:1px solid var(--line);padding:10px 12px;font-size:10px;
+    color:var(--dim);max-width:78vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   }
   .ca button{
     background:#000;border:2px solid #fff;color:#fff;
     box-shadow:-3px 0 0 var(--mg),3px 0 0 var(--cy);
     text-shadow:-1.5px 0 var(--mg),1.5px 0 var(--cy);
     font-family:inherit;font-size:12px;font-weight:bold;letter-spacing:2px;
-    padding:0 16px;cursor:pointer;text-transform:uppercase;margin-left:10px;
+    padding:10px 18px;cursor:pointer;text-transform:uppercase;margin-top:10px;
     transform:rotate(1.2deg);
   }
   .ca button:hover,.ca button:focus-visible{background:#fff;color:#000;text-shadow:none;outline:none}
-
-  /* the vault */
-  .vault-wrap{margin-top:44px;perspective:900px;cursor:pointer;position:relative}
-  .vault-label{
-    font-size:14px;font-weight:bold;letter-spacing:4px;text-transform:uppercase;
-    margin-bottom:14px;
-    text-shadow:-1.5px 0 var(--mg),1.5px 0 var(--cy);
-  }
-  svg.vault{width:min(320px,80vw);height:auto;display:block;overflow:visible}
-  .ghost-m{stroke:var(--mg);opacity:.8}
-  .ghost-c{stroke:var(--cy);opacity:.8}
-  .white{stroke:#fff}
-  .door{
-    transform-origin:26% 50%;
-    transition:transform .8s cubic-bezier(.6,-.2,.3,1);
-  }
-  .vault-wrap.open .door{transform:rotateY(-105deg)}
-  .inside-txt{
-    opacity:0;fill:#fff;font-family:"Courier New",monospace;font-size:13px;
-    letter-spacing:3px;transition:opacity .4s .4s;
-  }
-  .vault-wrap.open .inside-txt{opacity:1}
-  .hint{color:var(--dim);font-size:11px;letter-spacing:2px;margin-top:12px}
-  .vault-wrap:hover .vault{filter:drop-shadow(0 0 8px rgba(250,50,210,.35)) drop-shadow(0 0 8px rgba(4,230,233,.35))}
 
   nav{margin-top:46px;font-size:13px;letter-spacing:2px;display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
   nav a{color:var(--dim);text-decoration:none;text-transform:uppercase}
@@ -85,59 +100,74 @@
 <body>
 
 <img class="logo" src="lqclogo-white-outline-transparentbg.png" alt="lowqualitycat logo">
-<h1>lowqualitycat</h1>
-<div class="sub">(低质量猫) — low quality is the only quality</div>
+<h1><span>low</span><span>quality</span><span>cat</span></h1>
+<div class="cn">低质量猫</div>
 
-<div class="ca">
-  <code id="ca-text">HKv9jA7VREs68BA3PZMREiwuQKzfLUjr9azgrzbNpump</code>
-  <button id="ca-copy">Copy CA</button>
-</div>
-
-<div class="vault-wrap" id="vault" role="button" tabindex="0" aria-label="Open the meme vault">
-  <div class="vault-label">Meme Vault</div>
-  <svg class="vault" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <!-- body: three ghost layers, deliberately misaligned -->
-    <g class="ghost-m" transform="translate(-4,1) rotate(-.6 150 130)">
-      <path d="M28 22 L275 18 L279 236 L24 241 Z"/>
-    </g>
-    <g class="ghost-c" transform="translate(4,-1) rotate(.7 150 130)">
-      <path d="M28 22 L275 18 L279 236 L24 241 Z"/>
-    </g>
-    <g class="white">
-      <path d="M28 22 L275 18 L279 236 L24 241 Z"/>
-      <!-- bolts -->
-      <circle cx="42" cy="36" r="4"/><circle cx="262" cy="33" r="4"/>
-      <circle cx="44" cy="226" r="4"/><circle cx="264" cy="222" r="4"/>
-    </g>
-    <!-- inside reveal (behind door) -->
-    <text class="inside-txt" x="150" y="128" text-anchor="middle">246 MEMES</text>
-    <text class="inside-txt" x="150" y="150" text-anchor="middle">ENTER ▸</text>
-    <!-- circular door -->
-    <g class="door">
-      <g class="ghost-m" transform="translate(-3,1)">
-        <circle cx="151" cy="130" r="74"/>
+<div class="row">
+  <div class="vault-wrap" id="vault" role="button" tabindex="0" aria-label="Open the meme vault">
+    <div class="vault-label">Meme Vault</div>
+    <svg class="vault" viewBox="0 0 300 290" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <!-- safe body, wobbly, thick-wall double line -->
+      <g class="ghost-m" transform="translate(-4,1) rotate(-.7 150 140)">
+        <path d="M32 26 Q150 16 268 28 Q278 134 270 248 Q150 258 30 250 Q22 134 32 26 Z"/>
       </g>
-      <g class="ghost-c" transform="translate(3,-1)">
-        <circle cx="151" cy="130" r="74"/>
+      <g class="ghost-c" transform="translate(4,-1) rotate(.6 150 140)">
+        <path d="M32 26 Q150 16 268 28 Q278 134 270 248 Q150 258 30 250 Q22 134 32 26 Z"/>
       </g>
       <g class="white">
-        <circle cx="151" cy="130" r="74"/>
-        <circle cx="151" cy="130" r="22"/>
-        <!-- handle spokes, slightly crooked -->
-        <path d="M151 108 L149 62"/>
-        <path d="M151 152 L154 198"/>
-        <path d="M129 130 L83 133"/>
-        <path d="M173 130 L219 126"/>
-        <path d="M136 114 L104 83"/>
-        <path d="M167 146 L198 176"/>
-        <path d="M136 146 L106 179"/>
-        <path d="M167 114 L196 86"/>
-        <!-- hinge -->
-        <path d="M74 100 L62 100 M74 160 L62 160" stroke-width="6"/>
+        <path d="M32 26 Q150 16 268 28 Q278 134 270 248 Q150 258 30 250 Q22 134 32 26 Z"/>
+        <!-- feet -->
+        <path d="M62 252 L57 276 M238 252 L244 276" stroke-width="7"/>
       </g>
-    </g>
-  </svg>
-  <div class="hint">CLICK TO OPEN</div>
+      <!-- inside reveal (behind door) -->
+      <text class="inside-txt" x="150" y="132" text-anchor="middle">MEMES</text>
+      <text class="inside-txt" x="150" y="158" text-anchor="middle">ENTER ▸</text>
+      <!-- vault door: inset panel, wheel, bolts, hinges -->
+      <g class="door">
+        <g class="ghost-m" transform="translate(-3,1)">
+          <path d="M58 50 Q150 42 244 52 Q252 140 246 226 Q150 234 54 228 Q48 140 58 50 Z"/>
+        </g>
+        <g class="ghost-c" transform="translate(3,-1)">
+          <path d="M58 50 Q150 42 244 52 Q252 140 246 226 Q150 234 54 228 Q48 140 58 50 Z"/>
+        </g>
+        <g class="white">
+          <path d="M58 50 Q150 42 244 52 Q252 140 246 226 Q150 234 54 228 Q48 140 58 50 Z"/>
+          <!-- corner bolts -->
+          <circle cx="76" cy="72" r="5"/><circle cx="226" cy="74" r="5"/>
+          <circle cx="78" cy="206" r="5"/><circle cx="224" cy="204" r="5"/>
+          <!-- hinges on the right -->
+          <path d="M246 88 L264 85 L266 106 L248 108 Z"/>
+          <path d="M246 172 L265 170 L267 191 L249 193 Z"/>
+          <!-- spoked wheel -->
+          <circle cx="148" cy="140" r="46"/>
+          <circle cx="148" cy="140" r="12"/>
+          <path d="M148 128 L146 96"/>
+          <path d="M148 152 L151 184"/>
+          <path d="M136 140 L104 142"/>
+          <path d="M160 140 L192 137"/>
+          <path d="M139 131 L117 110"/>
+          <path d="M158 149 L180 171"/>
+          <!-- knobs on spoke ends -->
+          <circle cx="146" cy="94" r="5"/><circle cx="151" cy="186" r="5"/>
+          <circle cx="102" cy="142" r="5"/><circle cx="194" cy="137" r="5"/>
+          <!-- combination dial -->
+          <circle cx="148" cy="215" r="9"/>
+          <path d="M148 208 L148 212"/>
+        </g>
+        <!-- engraving -->
+        <text x="148" y="78" text-anchor="middle" fill="#7f8a8a" font-family="Courier New" font-size="14" letter-spacing="3">$LQC</text>
+      </g>
+    </svg>
+    <div class="hint">CLICK TO OPEN</div>
+  </div>
+
+  <div class="ca-block">
+    <div class="ca-label">Contract</div>
+    <div class="ca">
+      <code id="ca-text">HKv9jA7VREs68BA3PZMREiwuQKzfLUjr9azgrzbNpump</code>
+      <button id="ca-copy">Copy CA</button>
+    </div>
+  </div>
 </div>
 
 <nav>
