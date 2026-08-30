@@ -4,28 +4,174 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>lowqualitycat</title>
+<meta property="og:title" content="Low Quality Cat — $LQC">
+<meta property="og:description" content="low quality is the only quality. 低质量猫">
+<meta property="og:image" content="https://lowqualitycat.com/lqclogo-white-outline-transparentbg.png">
 <style>
-  body {
-    background: #111;
-    color: #eee;
-    font-family: monospace;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    text-align: center;
+  :root{
+    --bg:#000;--ink:#fff;--dim:#7f8a8a;
+    --mg:#fa32d2;--cy:#04e6e9;--line:#25292b;
   }
-  h1 { font-size: 3rem; margin-bottom: 0.5rem; }
-  p { color: #888; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);min-height:100%}
+  body{
+    font-family:"Courier New",Courier,monospace;
+    display:flex;flex-direction:column;align-items:center;
+    padding:40px 16px 60px;text-align:center;
+    -webkit-font-smoothing:none;
+  }
+  .logo{width:110px;image-rendering:pixelated;margin-bottom:14px}
+  h1{
+    font-size:26px;letter-spacing:5px;text-transform:uppercase;
+    text-shadow:-2px 0 var(--mg),2px 0 var(--cy);
+  }
+  .sub{color:var(--dim);font-size:13px;letter-spacing:3px;margin-top:8px}
+
+  /* CA bar */
+  .ca{
+    margin-top:26px;display:flex;align-items:stretch;max-width:100%;
+  }
+  .ca code{
+    border:1px solid var(--line);padding:10px 12px;font-size:11px;
+    color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:62vw;
+  }
+  .ca button{
+    background:#000;border:2px solid #fff;color:#fff;
+    box-shadow:-3px 0 0 var(--mg),3px 0 0 var(--cy);
+    text-shadow:-1.5px 0 var(--mg),1.5px 0 var(--cy);
+    font-family:inherit;font-size:12px;font-weight:bold;letter-spacing:2px;
+    padding:0 16px;cursor:pointer;text-transform:uppercase;margin-left:10px;
+    transform:rotate(1.2deg);
+  }
+  .ca button:hover,.ca button:focus-visible{background:#fff;color:#000;text-shadow:none;outline:none}
+
+  /* the vault */
+  .vault-wrap{margin-top:44px;perspective:900px;cursor:pointer;position:relative}
+  .vault-label{
+    font-size:14px;font-weight:bold;letter-spacing:4px;text-transform:uppercase;
+    margin-bottom:14px;
+    text-shadow:-1.5px 0 var(--mg),1.5px 0 var(--cy);
+  }
+  svg.vault{width:min(320px,80vw);height:auto;display:block;overflow:visible}
+  .ghost-m{stroke:var(--mg);opacity:.8}
+  .ghost-c{stroke:var(--cy);opacity:.8}
+  .white{stroke:#fff}
+  .door{
+    transform-origin:26% 50%;
+    transition:transform .8s cubic-bezier(.6,-.2,.3,1);
+  }
+  .vault-wrap.open .door{transform:rotateY(-105deg)}
+  .inside-txt{
+    opacity:0;fill:#fff;font-family:"Courier New",monospace;font-size:13px;
+    letter-spacing:3px;transition:opacity .4s .4s;
+  }
+  .vault-wrap.open .inside-txt{opacity:1}
+  .hint{color:var(--dim);font-size:11px;letter-spacing:2px;margin-top:12px}
+  .vault-wrap:hover .vault{filter:drop-shadow(0 0 8px rgba(250,50,210,.35)) drop-shadow(0 0 8px rgba(4,230,233,.35))}
+
+  nav{margin-top:46px;font-size:13px;letter-spacing:2px;display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
+  nav a{color:var(--dim);text-decoration:none;text-transform:uppercase}
+  nav a:hover,nav a:focus-visible{color:#fff;text-shadow:-1px 0 var(--mg),1px 0 var(--cy);outline:none}
+
+  footer{margin-top:auto;padding-top:50px;color:var(--dim);font-size:11px;letter-spacing:2px}
+
+  @media (prefers-reduced-motion:reduce){
+    .door{transition:none}
+    .inside-txt{transition:none}
+  }
 </style>
 </head>
 <body>
-    <img src="lqclogo-white-outline-transparentbg.png" alt="lowqualitycat logo" style="width: 500px; max-width: 60%; margin-bottom: 1.5rem;">
-  <h1>lowqualitycat</h1>
-    <p style="color: #eee; font-size: 2.5rem; margin: 0;">(低质量猫)</p>
-  <p>site under construction</p>
-    <a href="https://dexscreener.com/solana/f4txmevywadnmnb7fspbfyvkjukevrw5pxjyarhvqerd" style="color: #eee; font-size: 1.75rem; margin-top: 3.5rem; text-decoration: none;">$LQC</a>
+
+<img class="logo" src="lqclogo-white-outline-transparentbg.png" alt="lowqualitycat logo">
+<h1>lowqualitycat</h1>
+<div class="sub">(低质量猫) — low quality is the only quality</div>
+
+<div class="ca">
+  <code id="ca-text">HKv9jA7VREs68BA3PZMREiwuQKzfLUjr9azgrzbNpump</code>
+  <button id="ca-copy">Copy CA</button>
+</div>
+
+<div class="vault-wrap" id="vault" role="button" tabindex="0" aria-label="Open the meme vault">
+  <div class="vault-label">Meme Vault</div>
+  <svg class="vault" viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- body: three ghost layers, deliberately misaligned -->
+    <g class="ghost-m" transform="translate(-4,1) rotate(-.6 150 130)">
+      <path d="M28 22 L275 18 L279 236 L24 241 Z"/>
+    </g>
+    <g class="ghost-c" transform="translate(4,-1) rotate(.7 150 130)">
+      <path d="M28 22 L275 18 L279 236 L24 241 Z"/>
+    </g>
+    <g class="white">
+      <path d="M28 22 L275 18 L279 236 L24 241 Z"/>
+      <!-- bolts -->
+      <circle cx="42" cy="36" r="4"/><circle cx="262" cy="33" r="4"/>
+      <circle cx="44" cy="226" r="4"/><circle cx="264" cy="222" r="4"/>
+    </g>
+    <!-- inside reveal (behind door) -->
+    <text class="inside-txt" x="150" y="128" text-anchor="middle">246 MEMES</text>
+    <text class="inside-txt" x="150" y="150" text-anchor="middle">ENTER ▸</text>
+    <!-- circular door -->
+    <g class="door">
+      <g class="ghost-m" transform="translate(-3,1)">
+        <circle cx="151" cy="130" r="74"/>
+      </g>
+      <g class="ghost-c" transform="translate(3,-1)">
+        <circle cx="151" cy="130" r="74"/>
+      </g>
+      <g class="white">
+        <circle cx="151" cy="130" r="74"/>
+        <circle cx="151" cy="130" r="22"/>
+        <!-- handle spokes, slightly crooked -->
+        <path d="M151 108 L149 62"/>
+        <path d="M151 152 L154 198"/>
+        <path d="M129 130 L83 133"/>
+        <path d="M173 130 L219 126"/>
+        <path d="M136 114 L104 83"/>
+        <path d="M167 146 L198 176"/>
+        <path d="M136 146 L106 179"/>
+        <path d="M167 114 L196 86"/>
+        <!-- hinge -->
+        <path d="M74 100 L62 100 M74 160 L62 160" stroke-width="6"/>
+      </g>
+    </g>
+  </svg>
+  <div class="hint">CLICK TO OPEN</div>
+</div>
+
+<nav>
+  <a href="https://dexscreener.com/solana/f4txmevywadnmnb7fspbfyvkjukevrw5pxjyarhvqerd" target="_blank" rel="noopener">Chart</a>
+  <a href="https://jup.ag/swap/SOL-HKv9jA7VREs68BA3PZMREiwuQKzfLUjr9azgrzbNpump" target="_blank" rel="noopener">Buy</a>
+  <a href="https://x.com/Lowqltcat" target="_blank" rel="noopener">X</a>
+  <a href="memes.html">Memes</a>
+</nav>
+
+<footer>THE 0.1 MP ORIGINAL. IDENTITY UNKNOWN.</footer>
+
+<script>
+(function(){
+  var vault=document.getElementById('vault');
+  var opened=false;
+  function open(){
+    if(opened)return;opened=true;
+    vault.classList.add('open');
+    setTimeout(function(){location.href='memes.html';},1100);
+  }
+  vault.addEventListener('click',open);
+  vault.addEventListener('keydown',function(e){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}
+  });
+
+  document.getElementById('ca-copy').onclick=function(){
+    var t=document.getElementById('ca-text').textContent;
+    var b=this;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent='Copied';
+      setTimeout(function(){b.textContent='Copy CA';},1200);
+    });
+  };
+})();
+</script>
 </body>
 </html>
