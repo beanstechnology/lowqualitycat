@@ -377,7 +377,7 @@
     dlgMedia.innerHTML='';
     if(isVid){
       var v=document.createElement('video');
-      v.src=url;v.controls=true;v.autoplay=true;v.playsInline=true;
+      v.src=url;v.controls=true;v.autoplay=true;v.playsInline=true;v.loop=true;v.muted=true;
       dlgMedia.appendChild(v);
     }else{
       var im=document.createElement('img');
